@@ -5,7 +5,7 @@
     "scheme": "vkuroombooking",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
@@ -14,15 +14,14 @@
     "android": {
       "package": "com.vku.roombooking",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/app-icon-foreground.png",
+        "monochromeImage": "./assets/app-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/app-favicon.png",
       "output": "static",
       "name": "VKU Study Room Booking",
       "shortName": "VKU Rooms",
