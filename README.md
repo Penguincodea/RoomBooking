@@ -2,6 +2,8 @@
 
 Ứng dụng đặt phòng học cho VKU, xây dựng bằng Expo, React Native, TypeScript và Firebase. Khách có thể tìm phòng và đặt theo khung giờ; người quản lý có thể quản lý tòa nhà, phòng và lịch đặt.
 
+**Live demo:** [vku-room-booking.expo.app](https://vku-room-booking.expo.app)
+
 ## Tính năng
 
 - Đăng ký/đăng nhập bằng email và mật khẩu, xác nhận mật khẩu khi đăng ký.
@@ -25,7 +27,7 @@
 npm install
 ```
 
-Tạo file `.env.local` từ `.env.example` và điền **Web OAuth client ID** được tạo trong Google Cloud Console:
+Google Sign-In trên web dùng Firebase popup và không cần OAuth client ID trong bundle. Chỉ tạo `.env.local` từ `.env.example` nếu chạy Google Sign-In native trên Android/iOS; điền **Web OAuth client ID** lấy từ Google Cloud Console:
 
 ```env
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=1234567890-xxxxxxxx.apps.googleusercontent.com
@@ -37,7 +39,7 @@ EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=1234567890-xxxxxxxx.apps.googleusercontent.com
 
 1. Mở Firebase Console → **Authentication → Sign-in method**.
 2. Bật **Email/Password** và **Google**.
-3. Với đăng nhập web, vào **Authentication → Settings → Authorized domains** và thêm domain đang chạy ứng dụng nếu chưa có.
+3. Vào **Authentication → Settings → Authorized domains**, thêm `vku-room-booking.expo.app` để đăng nhập web hoạt động.
 4. Trong Firestore, publish [firestore.rules](firestore.rules). Đừng mở quyền ghi public.
 
 ### Google Sign-In cho Android/iOS
@@ -60,6 +62,14 @@ Web:
 ```bash
 npx expo start --web
 ```
+
+Để xuất bản bản web hiện tại hoặc cập nhật live demo:
+
+```bash
+npm run deploy:web
+```
+
+Lệnh export web rồi deploy lên EAS Hosting production. Cần đăng nhập Expo bằng `npx eas-cli@latest login` trước khi chạy.
 
 Android development build (Windows cần Android Studio/Android SDK đã cài):
 

@@ -20,17 +20,17 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signInWithGoogle() {
-  const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-  if (!webClientId) {
-    throw new Error('Thiếu EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID trong cấu hình môi trường.');
-  }
-
   let user: User;
   if (Platform.OS === 'web') {
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(auth, provider);
     user = credential.user;
   } else {
+    const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+    if (!webClientId) {
+      throw new Error('Thiếu EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID cho Google Sign-In native.');
+    }
+
     const { GoogleSignin, isSuccessResponse } = await import(
       '@react-native-google-signin/google-signin'
     );

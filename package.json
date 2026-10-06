@@ -32,6 +32,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "deploy:web": "npx expo export --platform web && npx eas-cli@latest deploy --prod",
     "seed:rooms": "node scripts/seed-rooms.mjs",
     "lint": "expo lint"
   },
