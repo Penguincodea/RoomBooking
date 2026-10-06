@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isManager() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'manager';
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && request.auth.uid == userId;
+      allow list: if isManager();
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role == 'guest'
+        && request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'createdAt']);
+      allow update, delete: if false;
+    }
+
+    match /buildings/{buildingId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isManager();
+    }
+
+    match /rooms/{roomId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isManager();
+    }
+
+    match /bookings/{bookingId} {
+      allow get, list: if isManager()
+        || (signedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'active'
+        && request.resource.data.roomId is string
+        && request.resource.data.day.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && request.resource.data.startHour is int
+        && request.resource.data.startHour >= 0
+        && request.resource.data.startHour <= 23
+        && request.resource.data.durationHours is int
+        && request.resource.data.durationHours >= 1
+        && request.resource.data.durationHours <= 8
+        && request.resource.data.slotIds is list
+        && request.resource.data.slotIds.size() == request.resource.data.durationHours
+        && request.resource.data.startsAt < request.resource.data.endsAt
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.cancelledAt == null
+        && request.resource.data.keys().hasOnly([
+          'roomId', 'roomName', 'building', 'userId', 'userEmail', 'day',
+          'startHour', 'durationHours', 'slotIds', 'startsAt', 'endsAt',
+          'status', 'createdAt', 'cancelledAt'
+        ]);
+
+      allow update: if (isManager() || (signedIn() && resource.data.userId == request.auth.uid))
+        && resource.data.status == 'active'
+        && request.resource.data.status == 'cancelled'
+        && request.resource.data.cancelledAt == request.time
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'cancelledAt'])
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasAll(['status', 'cancelledAt']);
+    }
+
+    match /roomSlots/{slotId} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.roomId is string
+        && request.resource.data.bookingId is string
+        && request.resource.data.day is string
+        && request.resource.data.hour is int
+        && exists(/databases/$(database)/documents/rooms/$(request.resource.data.roomId))
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.status == 'active'
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.roomId == request.resource.data.roomId
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.day == request.resource.data.day
+        && request.resource.data.hour >= getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.startHour
+        && request.resource.data.hour < getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.startHour + getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.durationHours
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.slotIds.hasAny([slotId])
+        && request.resource.data.keys().hasOnly(['roomId', 'bookingId', 'userId', 'day', 'hour']);
+
+      allow delete: if (isManager() || (signedIn() && resource.data.userId == request.auth.uid))
+        && getAfter(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.status == 'cancelled';
+      allow update: if false;
+    }
+  }
+}
