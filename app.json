@@ -23,7 +23,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "output": "static"
+      "output": "static",
+      "name": "VKU Study Room Booking",
+      "shortName": "VKU Rooms",
+      "description": "Tìm kiếm và đặt phòng học tại VKU.",
+      "lang": "vi",
+      "display": "standalone",
+      "orientation": "portrait",
+      "themeColor": "#176B59",
+      "backgroundColor": "#F4F6F3"
     },
     "plugins": [
       [

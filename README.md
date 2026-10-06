@@ -4,6 +4,13 @@
 
 **Live demo:** [vku-room-booking.expo.app](https://vku-room-booking.expo.app)
 
+Demo có thể cài lên màn hình chính của điện thoại như một PWA:
+
+- Android: mở link bằng Chrome → menu `⋮` → **Install app** hoặc **Add to Home screen**.
+- iPhone/iPad: mở link bằng Safari → **Share** → **Add to Home Screen**.
+
+PWA cần kết nối mạng để tải danh sách phòng và đồng bộ Firebase; bản cài web không cung cấp chế độ đặt phòng offline.
+
 ## Tính năng
 
 - Đăng ký/đăng nhập bằng email và mật khẩu, xác nhận mật khẩu khi đăng ký.
